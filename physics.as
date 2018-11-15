@@ -1,41 +1,64 @@
 ﻿package  {
+		
 	
-	//physics based vector for adobe flash
-	public class vector {
+	public class physics {
+		
+		import flash.display.Stage;
+		import flash.display.MovieClip;
+		import flash.events.Event;
+		import physicsVector;
 
-		//init global variables
-		public var x:Number;
-		public var y:Number;
+		//init private variables for the class 
+		private var object:MovieClip;
+		public var velocity:physicsVector;
+		public var accleration:physicsVector;
+		private var friction:Number;
+		
+		//public variables
+		public var UP:physicsVector = new physicsVector(0,-1);
+		public var DOWN:physicsVector = new physicsVector(0,1);
+		public var LEFT:physicsVector = new physicsVector(-1,0);
+		public var RIGHT:physicsVector = new physicsVector(1,0);
+		
 
-		public function vector(xComponet:Number, yComponet:Number) {
+		//creates a physics object for a movieClip object
+		public function physics(stageArg:Stage, objectArg:MovieClip, vX:Number=0, vY:Number=0, aX:Number=0, aY:Number=0,frictionArg=0.01) {
 			// constructor code
+
+			//initialize all class variables
+			object = objectArg;
+			velocity = new physicsVector(vX, vY);
+			accleration = new physicsVector(aX, aY);
+			friction = 1-frictionArg;
 			
-			//assign x and y values to the x and y of the vector
-			x = xComponet;
-			y = yComponet;
-			
-		}
-		
-		public function magnitude():Number{
-			
-			//use pythagorean theorem to get magnitude of the vector
-			return sqrt(pow(x,2) + pow(y,2))
+			//allow physics to update on each frame entered 
+			stageArg.addEventListener(Event.ENTER_FRAME, update);
 			
 		}
 		
-		//adds another vector to this vector
-		public function add(vectorToAdd:vector):void{
+		//function to update the velocity of the object
+		private function update(event:Event):void{
 			
-			x += vectorToAdd.x;
-			y += vectorToAdd.y;
+			//update velocity with accleration
+			velocity.add(accleration)
+			accleration = new physicsVector(0,0);
+			
+			object.x += velocity.x;
+			object.y += velocity.y;
+			
+			velocity.multiplyConstant(friction);
 			
 			}
-		
-		//allows vector to be multiplied by a scalar
-		public function multiplyConstant(c:Number):
-
-			x *= c;
-			y *= c;
+			
+		//function to update friction portion of the physics engine
+		private function frictionUpdate(){
+			
+			
+			}
+			
+		public function acclerate(direction:physicsVector){
+				accleration.add(direction);
+			}
 	}
 	
 }
