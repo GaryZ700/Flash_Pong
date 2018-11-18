@@ -12,11 +12,11 @@
 		import physicsVector;
 		
 		//create public variables
-		//constant vectors for the four core directions
-		public const UP:physicsVector = new physicsVector(0,-1);
-		public const DOWN:physicsVector = new physicsVector(0,1);
-		public const LEFT:physicsVector = new physicsVector(-1,0);
-		public const RIGHT:physicsVector = new physicsVector(1,0);
+		//vectors for the four core directions, and a zero vector as well
+		public var UP:physicsVector = new physicsVector(0,-1);
+		public var DOWN:physicsVector = new physicsVector(0,1);
+		public var LEFT:physicsVector = new physicsVector(-1,0);
+		public var RIGHT:physicsVector = new physicsVector(1,0);
 		public const ZERO:physicsVector = new physicsVector(0,0);
 		
 		//physics quantities
@@ -24,14 +24,15 @@
 		public var accleration:physicsVector;
 		public var angularVelocity:Number;
 		public var collisionVector:physicsVector;
+		public var object:MovieClip;
 
 		//create private variables for the class 
-		private var object:MovieClip;
 		private var friction:Number;
 		private var collisionObjs:Array;
 		private var pauseTimer:Timer;
 		private var pause = false;
 		private var lockedMovements:Array;
+		private var maxVelocity:Number;
 
 		//creates a physics object for a movieClip object
 		//returns new instance of the physics class 
@@ -58,6 +59,7 @@
 			lockedMovements = [];
 			pause = false;
 			collisionVector = ZERO;
+			maxVelocity = 10000000000;
 			
 			//allow physics to update on each frame entered 
 			stageArg.addEventListener(Event.ENTER_FRAME, update);
@@ -102,8 +104,12 @@
 			//check if object should be paused
 			if(!pause){
 			
-				//update velocity with accleration
-				velocity.add(accleration)
+				//check if object has not reached max velocity
+				if(maxVelocity > velocity.magnitude()){
+					//update velocity with accleration
+					velocity.add(accleration);
+					}
+				trace(velocity.magnitude());
 				
 				//reset accleration
 				accleration = new physicsVector(0,0);
@@ -207,6 +213,18 @@
 				collisionVector = direction;
 			
 			}
+			
+//--------------------------------------------------------------------------------------------
+
+		//function to set max velocity for this object
+		//has no return value 
+		//max, number that represents the max velocity of the object
+		public function setMaxVelocity(max:Number){
+			
+				//sets max velocity
+				maxVelocity = max;
+			
+			}
 		
 //********************************************************************************************
 //Public Functions that provide various movement abillities for the physics object 
@@ -216,13 +234,14 @@
 			
 				if(collisionObj.collisionVector.x > 0 && velocity.x < 0  ||
 				   collisionObj.collisionVector.x < 0 && velocity.x > 0)
-				   		velocity.x *= -1;
+				   		velocity.x *= -1 * collisionObj.collisionVector.magnitude();
 						
 				if(collisionObj.collisionVector.y > 0 && velocity.y < 0  ||
 				   collisionObj.collisionVector.y < 0 && velocity.y > 0)
-				   		velocity.y *= -1;
-					
-				velocity.add(collisionObj.velocity.newVector(0.1));
+				   		velocity.y *= -1 * collisionObj.collisionVector.magnitude();
+				
+				if(velocity.magnitude() < maxVelocity)
+					velocity.add(collisionObj.velocity.newVector(0.3));
 			
 			}
 			
