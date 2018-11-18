@@ -38,6 +38,30 @@
 			y *= c;
 	}
 	
+		//rotate function, rotates vector by specifed theta
+		//has no return value 
+		//theta, number of angle in degrees to rotate this vector
+		public function rotate(theta:Number){
+			
+				//get transformed x and y at specifed theta
+				var transformedY:Number = x*Math.cos(theta) - y*Math.sin(theta);
+				var transformedX:Number = x*Math.sin(theta) + y*Math.cos(theta);
+				
+				//update x and y of this vector 
+				x = transformedX;
+				y = transformedY;
+			
+			}
+	
+		//create a new vector with with as the as the base vector 
+		//returns a physicsVector with the specifed modifications 
+		//c, constant to multiply the vector's base by 
+		public function newVector(c:Number=1){
+			
+				return new physicsVector(x*c, y*c);
+			
+			}
+	
 	//take a base vector, and modifies the base vector such that it maintains the same magnitude, 
 	//but takes an opposite direction to this vector
 	public function antiVector(baseVector:physicsVector):physicsVector{
