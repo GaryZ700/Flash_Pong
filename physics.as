@@ -109,7 +109,6 @@
 					//update velocity with accleration
 					velocity.add(accleration);
 					}
-				trace(velocity.magnitude());
 				
 				//reset accleration
 				accleration = new physicsVector(0,0);
