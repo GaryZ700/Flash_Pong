@@ -30,7 +30,7 @@
 		public function magnitude():Number
 		{
 			//use pythagorean theorem to get magnitude of the vector
-			return Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+			return Math.sqrt(Math.abs(Math.pow(x,2)) + Math.abs(Math.pow(y,2)));
 		}
 
 //--------------------------------------------------------------------------------------------
@@ -99,8 +99,6 @@
 		//but takes an opposite direction to this vector
 		public function antiVector(baseVector:physicsVector):physicsVector
 		{
-
-
 			return new physicsVector(1,1);
 
 		}
@@ -126,7 +124,13 @@
 				
 		
 			//randomly decide which random number is the ycomponet and which is the xcomponet
-			if(setX && randNum > randNum2)
+			if(isNaN(randNum) || isNaN(randNum2)){
+				
+				x = 8;
+				y = 3;
+				
+			}
+			else if(setX && randNum > randNum2)
 				{//set 1st random number as x compnet
 				x = randNum;
 				y = randNum2;
