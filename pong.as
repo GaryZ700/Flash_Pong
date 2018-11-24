@@ -19,6 +19,16 @@
 				
 			
 			}
+			
+		//function to activate battle mode on paddles
+		//mode, number to represent which battle mode to start, 0 = vertical, 1 = horizontal
+		//controlls, reference to main instance of the controller class to modify controls of the paddles
+		public function startBattle(mode:Number, controlls:controller){
+			
+			
+			
+			}
+			
 
 	}
 	

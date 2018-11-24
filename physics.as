@@ -33,6 +33,7 @@
 		private var pause = false;
 		private var lockedMovements:Array;
 		private var maxVelocity:Number;
+		private var customProperties:Object;
 
 		//creates a physics object for a movieClip object
 		//returns new instance of the physics class 
@@ -60,6 +61,7 @@
 			pause = false;
 			collisionVector = ZERO;
 			maxVelocity = 10000000000;
+			customProperties = {};
 			
 			//allow physics to update on each frame entered 
 			stageArg.addEventListener(Event.ENTER_FRAME, update);
@@ -256,6 +258,42 @@
 				accleration.multiplyConstant(0);
 						
 			}
+			
+//--------------------------------------------------------------------------------------------
+
+	//function setProperty, allows users of this class to create costom properties to access at a later time for object specific porposes
+	//has no return value
+	//propertyName, string of property name to create or to set equal to some value 
+	//value, values ot set property equal to, can be of any type
+	public function setProperty(propertyName:String, value){
+
+			//create and set property to its value
+			customProperties[propertyName] = value;
+
+		}
+		
+//--------------------------------------------------------------------------------------------
+
+	//function getProperty, allows users to access customly created properties
+	//returns false if property was not created, else returns value of that property
+	//propertyName, string of property name to access
+	public function getProperty(propertyName:String){
+
+			//check if property exists in custom properties
+			if(customProperties.hasOwnProperty(propertyName)){
+
+				//then return property value 
+				return customProperties[propertyName];
+			
+			}
+			
+			else
+				//return false 
+				return false;
+
+		}
+//--------------------------------------------------------------------------------------------
+
 	}
 	
 }
