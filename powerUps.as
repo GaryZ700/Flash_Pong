@@ -40,22 +40,32 @@
 				trace(i);
 				//check if timer has stopper running, and that 
 				//if only single powerup instance is allowed, ensure only 1 is actually on stage
-				if(!powerUpEvents[i].timer.running && powerUpNotOnStage(powerUpEvents[i])){
+				if(!powerUpEvents[i].timer.running){
 					  
-						//create a new instance of the powerup child
-						var powerUp = new powerUpEvents[i].powerUp();
+					  	//check if powerup should be spawned onto the stage
+					  	if(powerUpNotOnStage(powerUpEvents[i])){
+					  
+							//create a new instance of the powerup child
+							var powerUp = new powerUpEvents[i].powerUp();
 					
-						//set powerUp to spawn at a random position
-						var area:Object = powerUpEvents[i].area;
-						powerUp.x = Math.random() * area.length + area.x;
-						powerUp.y = Math.random() * area.height + area.y;
+							//set powerUp to spawn at a random position
+							var area:Object = powerUpEvents[i].area;
+							powerUp.x = Math.random() * area.length + area.x;
+							powerUp.y = Math.random() * area.height + area.y;
 						
-						//set instance name 
-						powerUp.name = getQualifiedClassName(powerUpEvents[i].powerUp);
+							//set instance name 
+							powerUp.name = getQualifiedClassName(powerUpEvents[i].powerUp);
 					
-						//spawn in this power up as this timer has stopped running
-						stage.addChild(powerUp);
-						trace("Added PowerUp");
+							//spawn in this power up as this timer has stopped running
+							stage.addChild(powerUp);
+							trace("Added PowerUp");
+						
+							//get pickerUpper object
+							var pickerUpper:physics = powerUpEvents[i].collision;
+						
+							//add in collision to collision object
+							powerUpEvents[i].collision.addCollisionObj(new physics(stage, powerUp), function pickUpWrapper(physicsObj:physics){pickUp(physicsObj, pickerUpper );});
+						}
 						//check if more occurances of the powerUp should be spawned 
 						if(powerUpEvents[i].occurances > 0)
 						{	
@@ -119,8 +129,9 @@
 	//spawnTimeMax, number that represents the maxiumum time in milliseconds before a new power up is spawned 
 	//occurances, number of times that the object should be spawned onto the stage, 0 = infinite 
 	//powerUp, reference to the powerUp object class to spawn onto the stage
+	//collision, physics object that the powerUp is meant to be picked up by 
 	//multiple, bool that represents whether multiple of the same powerups should spawn onto the screen at the same time
-	public function addTimerEvent(spawnArea:Object, spawnTimeMin:Number, spawnTimeMax:Number, occurances:Number, powerUp:Object, multiple:Boolean=false){
+	public function addTimerEvent(spawnArea:Object, spawnTimeMin:Number, spawnTimeMax:Number, occurances:Number, powerUp:Object, collisionObject:physics, multiple:Boolean=false){
 		
 			//create a new temporary timer 
 			var tempTimer = new Timer(spawnTimeMax, 1);
@@ -134,7 +145,8 @@
 									"occurances":occurances,
 									"multiple":multiple,
 									"powerUp":powerUp,
-									"timer":tempTimer
+									"timer":tempTimer,
+									"collision":collisionObject
 									
 								});
 							
@@ -154,6 +166,22 @@
 		
 			//add in power up to powerUpsList
 			powerUpsList[name] = graphic;
+		
+		}
+
+//--------------------------------------------------------------------------------------------
+
+	//function to allow powerup to be picked by the ball
+	//has no return value
+	//obj, object that collided into the powerup
+	//pickerUpper, phyiscs object of what picked up the powerup
+	public function pickUp(obj:physics, pickerUpper:physics){
+		
+			//remove collision from pickerUpper
+			pickerUpper.removeCollision(obj);
+			
+			//remove powerup from the screen
+			stage.removeChild(obj.object);
 		
 		}
 

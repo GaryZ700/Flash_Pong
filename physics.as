@@ -294,6 +294,31 @@
 		}
 //--------------------------------------------------------------------------------------------
 
+	//function to allow user to reomve collision obj
+	//has no return value 
+	//collisionObj, physics object of object to remove from collision detection
+	public function removeCollision(collisionObj:physics){
+		
+			//iterate through all values in the array
+			for(var i=0; i<collisionObjs.length; i++){
+				
+					//if the collision obj in the array matches the specifed collision Obj to delete
+					if(collisionObjs[i][0] == collisionObj){
+							
+							//remove that index from the array
+							collisionObjs.splice(i,10);
+							
+							//break the loop
+							break;
+						
+						}
+					}
+		
+		}
+
+//--------------------------------------------------------------------------------------------
+
+
 	}
 	
 }
