@@ -62,9 +62,10 @@
 						
 							//get pickerUpper object
 							var pickerUpper:physics = powerUpEvents[i].collision;
+							var pickUpAction:Function = powerUpEvents[i].action;
 						
 							//add in collision to collision object
-							powerUpEvents[i].collision.addCollisionObj(new physics(stage, powerUp), function pickUpWrapper(physicsObj:physics){pickUp(physicsObj, pickerUpper );});
+							powerUpEvents[i].collision.addCollisionObj(new physics(stage, powerUp), function pickUpWrapper(physicsObj:physics){pickUp(physicsObj, pickerUpper ); pickUpAction(physicsObj);});
 						}
 						//check if more occurances of the powerUp should be spawned 
 						if(powerUpEvents[i].occurances > 0)
@@ -129,9 +130,10 @@
 	//spawnTimeMax, number that represents the maxiumum time in milliseconds before a new power up is spawned 
 	//occurances, number of times that the object should be spawned onto the stage, 0 = infinite 
 	//powerUp, reference to the powerUp object class to spawn onto the stage
+	//pickUpAction, function to execute once powerup has been picked up
 	//collision, physics object that the powerUp is meant to be picked up by 
 	//multiple, bool that represents whether multiple of the same powerups should spawn onto the screen at the same time
-	public function addTimerEvent(spawnArea:Object, spawnTimeMin:Number, spawnTimeMax:Number, occurances:Number, powerUp:Object, collisionObject:physics, multiple:Boolean=false){
+	public function addTimerEvent(spawnArea:Object, spawnTimeMin:Number, spawnTimeMax:Number, occurances:Number, powerUp:Object, collisionObject:physics, pickUpAction:Function, multiple:Boolean=false){
 		
 			//create a new temporary timer 
 			var tempTimer = new Timer(spawnTimeMax, 1);
@@ -146,7 +148,8 @@
 									"multiple":multiple,
 									"powerUp":powerUp,
 									"timer":tempTimer,
-									"collision":collisionObject
+									"collision":collisionObject,
+									"action":pickUpAction
 									
 								});
 							
@@ -182,6 +185,7 @@
 			
 			//remove powerup from the screen
 			stage.removeChild(obj.object);
+		
 		
 		}
 
