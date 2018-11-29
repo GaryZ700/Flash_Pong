@@ -10,6 +10,7 @@
 		public var key:uint;
 		public var keyAction:int;
 		public var action:Function;
+		public var keyState:Number;
 		
 		//private variables 
 		private var stage:Stage;
@@ -28,6 +29,8 @@
 			name = nameArg;
 			key = keyArg;
 			keyAction = keyActionArg;
+			action = actionArg;
+			keyState = 0;
 			
 			//check if action should only be run while key is down
 			if(Math.abs(keyActionArg)==2){

@@ -32,12 +32,10 @@
 	//function to handle complete timer events
 	//has no return value 
 	public function timerComplete(event:TimerEvent){
-		
-		trace("Timer");
-		
+				
 		//discover which event timer has completed 
 		for(var i=0; i<timerComplete.length; i++){
-				trace(i);
+
 				//check if timer has stopper running, and that 
 				//if only single powerup instance is allowed, ensure only 1 is actually on stage
 				if(!powerUpEvents[i].timer.running){
@@ -58,14 +56,13 @@
 					
 							//spawn in this power up as this timer has stopped running
 							stage.addChild(powerUp);
-							trace("Added PowerUp");
 						
 							//get pickerUpper object
 							var pickerUpper:physics = powerUpEvents[i].collision;
 							var pickUpAction:Function = powerUpEvents[i].action;
 						
 							//add in collision to collision object
-							powerUpEvents[i].collision.addCollisionObj(new physics(stage, powerUp), function pickUpWrapper(physicsObj:physics){pickUp(physicsObj, pickerUpper ); pickUpAction(physicsObj);});
+							powerUpEvents[i].collision.addCollisionObj(new physics(stage, powerUp), function pickUpWrapper(obj1:physics, physicsObj:physics){pickUp(physicsObj, pickerUpper ); pickUpAction(physicsObj);});
 						}
 						//check if more occurances of the powerUp should be spawned 
 						if(powerUpEvents[i].occurances > 0)
@@ -89,7 +86,6 @@
 						else{
 							    powerUpEvents[i].timer.reset();
 								powerUpEvents[i].timer.start();
-								trace("Reset Timer");
 							}
 					
 					}

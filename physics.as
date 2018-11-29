@@ -30,10 +30,10 @@
 		private var friction:Number;
 		private var collisionObjs:Array;
 		private var pauseTimer:Timer;
-		private var pause = false;
 		private var lockedMovements:Array;
 		private var maxVelocity:Number;
 		private var customProperties:Object;
+		private var stage:Stage;
 
 		//creates a physics object for a movieClip object
 		//returns new instance of the physics class 
@@ -54,11 +54,11 @@
 			accleration = new physicsVector(aX, aY);
 			friction = 1-frictionArg;
 			angularVelocity = angularVelocityArg;
+			stage = stageArg;
 			
 			//init variables that user does not set intialization value for
 			collisionObjs = [];
 			lockedMovements = [];
-			pause = false;
 			collisionVector = ZERO;
 			maxVelocity = 10000000000;
 			customProperties = {};
@@ -85,7 +85,7 @@
 						
 						//if yes, run the associated action with this collision
 						//and pass in this obj and the object this object collided with
-						collisionObj[1](collisionObj[0]);
+						collisionObj[1](this, collisionObj[0]);
 						
 						//merge velocity between the two objects if the user desieres so
 						//if(collisionObj[2] != null)
@@ -103,23 +103,18 @@
 		//event, event object that comes from onFrameEnter listener
 		private function update(event:Event){
 			
-			//check if object should be paused
-			if(!pause){
-			
-				//check if object has not reached max velocity
-				if(maxVelocity > velocity.magnitude()){
-					//update velocity with accleration
-					velocity.add(accleration);
-					}
+			//check if object has not reached max velocity
+			if(maxVelocity > velocity.magnitude()){
+				//update velocity with accleration
+				velocity.add(accleration);
+			}
 				
 				//reset accleration
-				accleration = new physicsVector(0,0);
+			accleration = new physicsVector(0,0);
 			
-				//update the object position from its velocity
-				object.x += velocity.x;
-				object.y += velocity.y;
-			
-			}
+			//update the object position from its velocity
+			object.x += velocity.x;
+			object.y += velocity.y;
 			
 			//apply friction to the objec's velocity
 			velocity.multiplyConstant(friction);
@@ -226,6 +221,37 @@
 				maxVelocity = max;
 			
 			}
+			
+//--------------------------------------------------------------------------------------------
+
+	//function to pause the physics on this object
+	//has no return value
+	//time, time in milliseconds on how long should this object be paused for, if it is 0 then pause until unpause is called manually
+	public function pause(time:Number=0){
+					
+			stage.removeEventListener(Event.ENTER_FRAME, update)
+					
+			//if pause is for a specified amount of time 
+			if(time > 0){
+				
+					//set up timer to end pause
+					pauseTimer = new Timer(time);
+					pauseTimer.addEventListener(TimerEvent.TIMER_COMPLETE, unPause);
+					pauseTimer.start();
+					
+				}
+		}
+
+//--------------------------------------------------------------------------------------------
+
+	//unPause function to end pause on this object
+	//has no return value 
+	//timer event from pauseTimer
+	public function unPause(event:TimerEvent=null){
+	
+		stage.addEventListener(Event.ENTER_FRAME, update)
+
+		}
 		
 //********************************************************************************************
 //Public Functions that provide various movement abillities for the physics object 

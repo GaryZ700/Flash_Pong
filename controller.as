@@ -100,7 +100,20 @@ public class controller{
 		}
 	
 	//function to remove a key binding
-	public function removeKeyBinding(){}
+	public function removeKeyBinding(name:String){
+		
+			//loop through all keybindings
+			for(var i=0; i<keyBindings.length; i++){
+				
+					if(keyBindings[i].name == name){
+						keyBindings.splice(i,1);
+						break;
+				
+					}
+				}
+		
+		
+		}
 	
 	//function to tempoarily pause a keybinding for a set period of time
 	//returns true if key was sucessfully paused, returns false if key name not in keyBindings 
@@ -112,8 +125,6 @@ public class controller{
 		var pausedBinding:keyBindingObj = keyBindings[0];
 		keyBindings.splice(0,1);
 		pauseTimer.addEventListener(TimerEvent.TIMER_COMPLETE, function unPauseBindingInit(event:TimerEvent){});
-		trace(pausedBinding);
-		trace(keyBindings);
 		pauseTimer.start();
 		
 		return true;
