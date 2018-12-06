@@ -15,6 +15,10 @@
 
 		//create all public variables here 
 		public var pelletReference:Class;
+		public var enemiesOnStage:Number;
+		public var enemiesOnScreen:Array;
+
+
 		
 		//careate all private variables here
 		private var stage:Stage;
@@ -22,7 +26,6 @@
 		private var colliders:Array;
 		private var enemies:Array;
 		private var wave:Array;
-		private var enemiesOnStage:Number;
 
 		//function to create a new instance of the shooter class method
 		//returns new instance of the shooter class method
@@ -40,6 +43,7 @@
 			enemies = [];
 			wave = [];
 			enemiesOnStage = 0;
+			enemiesOnScreen = [];
 		}
 
 //********************************************************************************************
@@ -101,10 +105,14 @@
 		
 		//function to spawn a pellet at a specifed location
 		//has no return value
-		public function spawnPellet(x:Number, y:Number, vX, vY){
+		public function spawnPellet(x:Number, y:Number, vX:Number, vY:Number, owner:Number=0){
 			
+				var pellet;
 				//create a new pellet instance 
-				var pellet = new pelletReference()
+				if(owner == 2)
+					pellet = new pellet2();
+				else
+					pellet = new pelletReference()
 				
 				//set pellet name and its position 
 				pellet.name = "pellet" + pellets.length + 1;
@@ -116,7 +124,7 @@
 								
 				//create a physics object for the pellet
 				var pelletObj:physics = new physics(stage, pellet, vX, vY, 0, 0, 0);
-			
+				pelletObj.setProperty("owner", owner);
 				//add in pelletObj to pellets holder
 				pellets.push(pelletObj);
 								
@@ -181,13 +189,15 @@
 	
 	//remove function removes pellet, but does not destory the object the pellet collided with 
 	//has no return value
-	public function removePellet(collider:physics, pellet:physics){
+	public function removePellet(collider:physics, pellet:physics, list=null){
 					
-			for(var p=0; p<pellets.length; p++){
+			if(list == null)
+				list = pellets;
+			for(var p=0; p<list.length; p++){
 					
-						if(pellets[p].object.name == pellet.object.name){
+						if(list[p].object.name == pellet.object.name){
 							
-							pellets.splice(p,1);
+							list.splice(p,1);
 						}
 					}
 		
@@ -215,6 +225,23 @@
 			enemies.push(enemy);
 		
 		}
+
+//--------------------------------------------------------------------------------------------
+		
+	//function to remove enemey from stage and also decrement alien count by one, and raises WAVE_COMPLETE event if all enemies removed from the stage
+	//has no return value 
+	//enemy, phyics of enmey to remove
+	public function removeEnemy(enemy:physics){
+		
+			removePellet(null, enemy, enemiesOnScreen);
+			stage.removeChild(enemy.object);
+			enemy.pause();
+			enemiesOnStage -= 1;
+			if(enemiesOnStage == 0)
+				dispatchEvent(new Event("WAVE_COMPLETE"));
+				
+		
+		}	
 		
 //--------------------------------------------------------------------------------------------
 
@@ -228,7 +255,7 @@
 	//	is a string of either "top", "bottom", "left", or "right", default is "top"
 	//tint, color object of how to modify enemies colors
 	//collisionFunction, code to handle what happens when a pellet collides with an alien, default is the destroy function
-	public function createEnemyWave(lines:Number, enemyNumber:Number, xSpeed:Number=0, ySpeed:Number=0.7, spawnPoint:String="top", tint:Color=null, collisionFunction:Function=null){
+	public function createEnemyWave(lines:Number, enemyNumber:Number, xSpeed:Number=0, ySpeed:Number=0.7, spawnPoint:String="top", tint:Color=null, collisionFunction:Function=null, alienBoundry:Function=null, boundry:Array=null, owner:Number=0){
 			
 			wave.push([]);	
 			
@@ -236,10 +263,11 @@
 			//and have appropriate velocities for that position
 			var dy:Number = 0;
 			var dx:Number = 0;
+			owner = 2;
 			switch(spawnPoint){
 				
 				case "bottom": 
-				
+					owner = 1;
 					ySpeed*= -1;
 					dy = stage.stageHeight;
 					break;
@@ -275,9 +303,13 @@
 				if(tint != null)
 					enemy.object.transform.colorTransform = tint;
 				
+				enemy.addCollisionObj(boundry[0], alienBoundry);
+				enemy.addCollisionObj(boundry[1], alienBoundry);
+				enemy.setProperty("owner", owner);
+				enemy.object.name = "alien" + e.toString();
 				//add in enemy as a pellet colider
 				addCollider(enemy, collisionFunction);
-				
+				enemiesOnScreen.push(enemy);
 				wave[waveIndex][l].push(enemy);
 					
 					}
