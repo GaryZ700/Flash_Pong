@@ -1,1 +1,0 @@
-Open the HTML file in a web browser to load the .swf and play the game. 
